@@ -14,10 +14,8 @@ In the event of hardware failure on the SecureDrop servers, having a recent back
 will enable you to redeploy the system without changing Onion URLs, recreating
 Journalist accounts, or losing historical submissions from sources.
 
-.. note:: The backup and restore functionality described in this guide was introduced
-          in SecureDrop 0.3.7. Prior versions of SecureDrop included a less featureful
-          backup process. Make sure you have upgraded to SecureDrop 0.3.7 or greater
-          before continuing.
+.. note:: Make sure you have upgraded to SecureDrop 0.4 before running the backup
+          and restore process.
 
 Minimizing disk space
 ---------------------
@@ -55,7 +53,7 @@ Backing Up
 
 Open a **Terminal** on the *Admin Workstation* and ``cd`` to your clone of the
 SecureDrop git repository (usually ``~/Persistent/securedrop``). Ensure you have
-SecureDrop version 0.3.7 or later checked out (you can run ``git describe
+SecureDrop version 0.4 or later checked out (you can run ``git describe
 --exact-match`` to see what Git tag you've checked out).
 
 .. note:: The backups are stored in the *Admin Workstation*'s persistent volume.
@@ -135,7 +133,7 @@ Prerequisites
 
 The process for restoring a backup is very similar to the process of creating
 one. As before, to get started, boot the *Admin Workstation*, ``cd`` to the
-SecureDrop repository, and ensure that you have SecureDrop 0.3.7 or later
+SecureDrop repository, and ensure that you have SecureDrop 0.4 or later
 checked out.
 
 The restore role expects to find a ``.tar.gz`` backup archive in
@@ -154,7 +152,7 @@ Run the restore Ansible role
 ''''''''''''''''''''''''''''
 
 To perform a restore, simply run the *same* command that you ran to perform a
-backup:
+backup, indicating which backup you would like to restore:
 
 .. code:: sh
 
