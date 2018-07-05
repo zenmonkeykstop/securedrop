@@ -1333,6 +1333,26 @@ def test_valid_user_password_change(journalist_app, test_journo):
     assert 'Password updated.' in resp.data.decode('utf-8')
 
 
+def test_regenerate_totp(journalist_app, test_journo):
+    old_secret = test_journo['otp_secret']
+
+    with journalist_app.test_client() as app:
+        _login_user(app, test_journo['username'], test_journo['password'],
+                    test_journo['otp_secret'])
+
+        with InstrumentedApp(journalist_app) as ins:
+            resp = app.post(url_for('account.reset_two_factor_totp'))
+
+            # should redirect to verification page
+            ins.assert_redirects(resp, url_for('account.new_two_factor'))
+
+    # fetch altered DB object
+    journo = Journalist.query.get(test_journo['id'])
+    new_secret = journo.otp_secret
+
+    assert new_secret != old_secret
+
+
 class TestJournalistApp(TestCase):
 
     # A method required by flask_testing.TestCase
@@ -1366,19 +1386,6 @@ class TestJournalistApp(TestCase):
 
     def _login_user(self):
         self._ctx.g.user = self.user
-
-    def test_regenerate_totp(self):
-        self._login_user()
-        old_totp = self.user.totp
-
-        res = self.client.post(url_for('account.reset_two_factor_totp'))
-        new_totp = self.user.totp
-
-        # check that totp is different
-        self.assertNotEqual(old_totp.secret, new_totp.secret)
-
-        # should redirect to verification page
-        self.assertRedirects(res, url_for('account.new_two_factor'))
 
     def test_edit_hotp(self):
         self._login_user()
