@@ -9,37 +9,39 @@ RUN apt-get update && \
     apt-get install -y devscripts \
                        python-pip libpython2.7-dev libssl-dev secure-delete \
                        gnupg2 ruby redis-server git xvfb haveged curl \
-                       gettext paxctl x11vnc enchant libffi-dev sqlite3 wget \
+                       gettext paxctl tightvncserver enchant libffi-dev sqlite3 wget \
                        libasound2 libdbus-glib-1-2 libgtk2.0-0 libfontconfig1 libxrender1 \
                        libcairo-gobject2 libgtk-3-0 libstartup-notification0
 
 RUN gem install sass -v 3.4.23
 
-
-ENV FIREFOX_CHECKSUM=3524a6e27ff8098a5a59d13b60e89d79b87cae4c63d84ddd041052f17de2430f
-RUN curl -LO https://launchpad.net/~mozillateam/+archive/ubuntu/ppa/+files/firefox-esr_52.9.0esr+build2-0ubuntu0.14.04.1_amd64.deb && \
-    shasum -a 256 firefox*deb && \
-    echo "${FIREFOX_CHECKSUM}  firefox-esr_52.9.0esr+build2-0ubuntu0.14.04.1_amd64.deb" | shasum -a 256 -c - && \
-    dpkg -i firefox*deb && apt-get install -f && \
-    paxctl -cm /usr/lib/firefox-esr/firefox-esr
-
+ENV FF_ESR_VER 60.2.0esr
+RUN curl -LO https://ftp.mozilla.org/pub/firefox/releases/${FF_ESR_VER}/linux-x86_64/en-US/firefox-${FF_ESR_VER}.tar.bz2 && \
+    curl -LO https://ftp.mozilla.org/pub/firefox/releases/${FF_ESR_VER}/linux-x86_64/en-US/firefox-${FF_ESR_VER}.tar.bz2.asc && \
+    gpg --recv-key --keyserver keys.gnupg.net 0x61B7B526D98F0353 && \
+    gpg --verify firefox-${FF_ESR_VER}.tar.bz2.asc && \
+    tar xjf firefox-*.tar.bz2 && \
+    mv firefox /usr/bin && \
+    paxctl -cm /usr/bin/firefox/firefox
 
 COPY ./tor_project_public.pub /opt/
 
+ENV TBB_VERSION 8.0.1
 RUN gpg --import /opt/tor_project_public.pub && \
-    wget  https://www.torproject.org/dist/torbrowser/7.5.6/tor-browser-linux64-7.5.6_en-US.tar.xz && \
-    wget https://www.torproject.org/dist/torbrowser/7.5.6/tor-browser-linux64-7.5.6_en-US.tar.xz.asc && \
-    gpg --verify tor-browser-linux64-7.5.6_en-US.tar.xz.asc tor-browser-linux64-7.5.6_en-US.tar.xz
+    wget  https://www.torproject.org/dist/torbrowser/${TBB_VERSION}/tor-browser-linux64-${TBB_VERSION}_en-US.tar.xz && \
+    wget https://www.torproject.org/dist/torbrowser/${TBB_VERSION}/tor-browser-linux64-${TBB_VERSION}_en-US.tar.xz.asc && \
+    gpg --verify tor-browser-linux64-${TBB_VERSION}_en-US.tar.xz.asc tor-browser-linux64-${TBB_VERSION}_en-US.tar.xz
 
-RUN tar -xvJf tor-browser-linux64-7.5.6_en-US.tar.xz && \
+RUN tar -xvJf tor-browser-linux64-${TBB_VERSION}_en-US.tar.xz && \
     mkdir -p /root/.local/tbb && mv tor-browser_en-US /root/.local/tbb &&\
-    paxctl -cm /root/.local/tbb/tor-browser_en-US/Browser/firefox && \
+    paxctl -cm /root/.local/tbb/tor-browser_en-US/Browser/firefox.real && \
+    paxctl -cm /root/.local/tbb/tor-browser_en-US/Browser/libnspr4.so && \
     paxctl -cm /root/.local/tbb/tor-browser_en-US/Browser/plugin-container
 
-ENV GECKODRIVER_CHECKSUM=3154274c050d724eb2f4e8986a58ed37c0138b48304692bf7eeed827a5e82319
-RUN wget https://github.com/mozilla/geckodriver/releases/download/v0.17.0/geckodriver-v0.17.0-linux64.tar.gz && \
+ENV GECKODRIVER_CHECKSUM=9d80799bff034eda2a233493a78e3250b7c6118c9010ec37a871783081963fda
+RUN wget https://github.com/mozilla/geckodriver/releases/download/v0.22.0/geckodriver-v0.22.0-linux64.tar.gz && \
     shasum -a 256 geckodriver*tar.gz && \
-    echo "${GECKODRIVER_CHECKSUM}  geckodriver-v0.17.0-linux64.tar.gz" | shasum -a 256 -c - && \
+    echo "${GECKODRIVER_CHECKSUM}  geckodriver-v0.22.0-linux64.tar.gz" | shasum -a 256 -c - && \
     tar -zxvf geckodriver*tar.gz && chmod +x geckodriver && mv geckodriver /bin && \
     paxctl -cm /bin/geckodriver
 

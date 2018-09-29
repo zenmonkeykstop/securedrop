@@ -5,6 +5,7 @@ import errno
 import mock
 from multiprocessing import Process
 import os
+import logging
 from os.path import abspath, dirname, join, realpath, expanduser
 import signal
 import socket
@@ -23,8 +24,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.remote.remote_connection import LOGGER
 from tbselenium.tbdriver import TorBrowserDriver
-from tbselenium.utils import start_xvfb, stop_xvfb
 
 os.environ['SECUREDROP_ENV'] = 'test'  # noqa
 
@@ -40,10 +41,12 @@ from db import db
 FUNCTIONAL_TEST_DIR = abspath(dirname(__file__))
 LOGFILE_PATH = abspath(join(FUNCTIONAL_TEST_DIR, 'firefox.log'))
 FILES_DIR = abspath(join(dirname(realpath(__file__)), '../..', 'tests/files'))
+FIREFOX_PATH = '/usr/bin/firefox/firefox'
 
 TBB_PATH = abspath(join(expanduser('~'), '.local/tbb/tor-browser_en-US/'))
 os.environ['TBB_PATH'] = TBB_PATH
 TBBRC = join(TBB_PATH, 'Browser/TorBrowser/Data/Tor/torrc')
+LOGGER.setLevel(logging.WARNING)
 
 
 # https://stackoverflow.com/a/34795883/837471
@@ -142,8 +145,7 @@ class FunctionalTest(object):
             profile.set_preference("network.proxy.socks_remote_dns", True)
             profile.set_preference("network.dns.blockDotOnion", False)
             profile.update_preferences()
-        binpath = '/usr/lib/firefox-esr/firefox-esr'
-        self.second_driver = webdriver.Firefox(firefox_binary=binpath,
+        self.second_driver = webdriver.Firefox(firefox_binary=FIREFOX_PATH,
                                                firefox_profile=profile)
         self.second_driver.implicitly_wait(15)
 
@@ -153,10 +155,9 @@ class FunctionalTest(object):
         # associated issues for background on why this is necessary
         connrefused_retry_count = 3
         connrefused_retry_interval = 5
-        binpath = '/usr/lib/firefox-esr/firefox-esr'
         for i in range(connrefused_retry_count + 1):
             try:
-                driver = webdriver.Firefox(firefox_binary=binpath,
+                driver = webdriver.Firefox(firefox_binary=FIREFOX_PATH,
                                            firefox_profile=profile)
                 if i > 0:
                     # i==0 is normal behavior without connection refused.
@@ -311,14 +312,19 @@ class FunctionalTest(object):
         # Allow custom session expiration lengths
         self.session_expiration = session_expiration
 
-        self.xvfb_display = start_xvfb()
         if not hasattr(self, 'override_driver'):
             # Means this is not pages-layout tests
             self._create_secondary_firefox_driver()
             self.driver = self._create_webdriver()
         else:
             # We will use a normal firefox esr for the pages-layout tests
-            self.driver = self._create_webdriver2(self.new_profile)  # noqa # pylint: disable=no-member 
+            self.driver = self._create_webdriver2(self.new_profile)  # noqa # pylint: disable=no-member
+
+            # Set window size and position explicitly to avoid potential bugs
+            # due to discrepancies between environments.
+            self.driver.set_window_position(0, 0)
+            self.driver.set_window_size(1024, 768)
+
             self._javascript_toggle()
 
         # Polls the DOM to wait for elements. To read more about why
@@ -345,7 +351,6 @@ class FunctionalTest(object):
             self.driver.quit()
         if self.second_driver:
             self.second_driver.quit()
-        stop_xvfb(self.xvfb_display)
         if self.localtesting:
             self.source_process.terminate()
             self.journalist_process.terminate()

@@ -21,7 +21,7 @@ test: ## Run the test suite in a dockerized environment
 
 .PHONY: dev
 dev: ## Run the dev server
-	 DOCKER_RUN_ARGUMENTS='-p127.0.0.1:8080:8080 -p127.0.0.1:8081:8081 -p127.0.0.1:5901:5901' ./bin/dev-shell ./bin/run
+	 DOCKER_RUN_ARGUMENTS='-p127.0.0.1:8080:8080 -p127.0.0.1:8081:8081' ./bin/dev-shell ./bin/run
 
 config.py: test-config
 
@@ -47,6 +47,10 @@ update-user-guides: ## Runs the page layout tests to regenerate screenshots
 translate: ## Update POT translation files from sources
 	./bin/dev-shell ./i18n_tool.py translate-messages --extract-update
 	./bin/dev-shell ./i18n_tool.py translate-desktop --extract-update
+
+.PHONY: func-vnc
+func-vnc: ## Open up a VNC connection to a running docker instance
+	../devops/scripts/vnc-docker-connect.sh
 
 # For an explanation of this shell magic, see the Makefile in the root of the repository
 .PHONY: help
