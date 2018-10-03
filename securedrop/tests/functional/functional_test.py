@@ -373,7 +373,7 @@ class FunctionalTest(object):
         return function_with_assertion()
 
     def _alert_wait(self):
-        WebDriverWait(self.driver, 10).until(
+        WebDriverWait(self.driver, 30).until(
             expected_conditions.alert_is_present(),
             'Timed out waiting for confirmation popup.')
 
