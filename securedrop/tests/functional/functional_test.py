@@ -26,6 +26,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.remote.remote_connection import LOGGER
 from tbselenium.tbdriver import TorBrowserDriver
+import tbselenium.common as cm
 
 os.environ['SECUREDROP_ENV'] = 'test'  # noqa
 
@@ -46,6 +47,7 @@ FIREFOX_PATH = '/usr/bin/firefox/firefox'
 TBB_PATH = abspath(join(expanduser('~'), '.local/tbb/tor-browser_en-US/'))
 os.environ['TBB_PATH'] = TBB_PATH
 TBBRC = join(TBB_PATH, 'Browser/TorBrowser/Data/Tor/torrc')
+
 LOGGER.setLevel(logging.WARNING)
 
 
@@ -108,12 +110,14 @@ class FunctionalTest(object):
         # cookies are set as session cookies), this should not affect session
         # lifetime.
         pref_dict = {'network.proxy.no_proxies_on': '127.0.0.1',
-                     'browser.privatebrowsing.autostart': False}
+                     'browser.privatebrowsing.autostart': False,
+                     'network.proxy.socks_port': 9050}
         for i in range(connrefused_retry_count + 1):
             try:
                 driver = TorBrowserDriver(TBB_PATH,
                                           pref_dict=pref_dict,
-                                          tbb_logfile_path=LOGFILE_PATH)
+                                          tbb_logfile_path=LOGFILE_PATH,
+ 					  tor_cfg=cm.USE_RUNNING_TOR)
                 if i > 0:
                     # i==0 is normal behavior without connection refused.
                     print('NOTE: Retried {} time(s) due to '
@@ -140,7 +144,7 @@ class FunctionalTest(object):
             # set FF preference to socks proxy in Tor Browser
             profile.set_preference("network.proxy.type", 1)
             profile.set_preference("network.proxy.socks", "127.0.0.1")
-            profile.set_preference("network.proxy.socks_port", 9150)
+            profile.set_preference("network.proxy.socks_port", 9050)
             profile.set_preference("network.proxy.socks_version", 5)
             profile.set_preference("network.proxy.socks_remote_dns", True)
             profile.set_preference("network.dns.blockDotOnion", False)

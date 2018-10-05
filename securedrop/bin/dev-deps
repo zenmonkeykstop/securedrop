@@ -10,6 +10,16 @@ function run_redis() {
     setsid redis-server >& /tmp/redis.out || cat /tmp/redis.out
 }
 
+function run_tor() {
+   if [ -e tests/functional/instance_information.json ] 
+   then 
+       sudo cat tests/functional/instance_information.json |jq -j '"HidServAuth ", .journalist_location, " ", .hidserv_token, "\n"' | sed s/http:\\/\\///g | sudo tee -a /etc/tor/torrc > /dev/null
+       tail -n 1 /etc/tor/torrc
+       sudo service tor start
+   fi
+#   usewithtor curl -s https://check.torproject.org/ | cat| grep -m 1 Congratulations
+}
+
 function setup_vncauth {
     
     echo "freedom" | vncpasswd -f > /tmp/vncpasswd

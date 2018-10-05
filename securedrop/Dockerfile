@@ -11,9 +11,18 @@ RUN apt-get update && \
                        gnupg2 ruby redis-server git xvfb haveged curl \
                        gettext paxctl tightvncserver enchant libffi-dev sqlite3 wget \
                        libasound2 libdbus-glib-1-2 libgtk2.0-0 libfontconfig1 libxrender1 \
-                       libcairo-gobject2 libgtk-3-0 libstartup-notification0
+                       libcairo-gobject2 libgtk-3-0 libstartup-notification0 tor torsocks
 
 RUN gem install sass -v 3.4.23
+
+# Trusty has an old version of JQ, need 1.5 to parse instance_information.json
+
+ENV JQ_CHECKSUM=c6b3a7d7d3e7b70c6f51b706a3b90bd01833846c54d32ca32f0027f00226ff6d
+RUN wget https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 && \
+    shasum -a 256 jq-linux64 && \
+    echo "${JQ_CHECKSUM}  jq-linux64" | shasum -a 256 -c - && \
+    mv jq-linux64 /usr/bin/jq && chmod +x /usr/bin/jq && \
+    paxctl -cm /usr/bin/jq
 
 ENV FF_ESR_VER 60.2.0esr
 RUN curl -LO https://ftp.mozilla.org/pub/firefox/releases/${FF_ESR_VER}/linux-x86_64/en-US/firefox-${FF_ESR_VER}.tar.bz2 && \
@@ -26,7 +35,7 @@ RUN curl -LO https://ftp.mozilla.org/pub/firefox/releases/${FF_ESR_VER}/linux-x8
 
 COPY ./tor_project_public.pub /opt/
 
-ENV TBB_VERSION 8.0.1
+ENV TBB_VERSION 8.0.2
 RUN gpg --import /opt/tor_project_public.pub && \
     wget  https://www.torproject.org/dist/torbrowser/${TBB_VERSION}/tor-browser-linux64-${TBB_VERSION}_en-US.tar.xz && \
     wget https://www.torproject.org/dist/torbrowser/${TBB_VERSION}/tor-browser-linux64-${TBB_VERSION}_en-US.tar.xz.asc && \
