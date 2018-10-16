@@ -40,10 +40,31 @@ to point to apt-test
 
 Server and Admin testing
 ^^^^^^^^^^^^^^^^^^^^^^^^
-Server configuration checks:
+You'll need to use the *Admin Workstation*, after successfully running the 
+`./securedrop-admin tailsconfig` command, to test the server configuration:
 
-- how to run them
-- expected results
+- verify that the *Journalist* and *Source* interfaces are up using the appropriate
+  desktop shortcuts
+- verify that you can SSH into the servers from a terminal using the commands 
+  `ssh app` and `ssh mon`
+- on each server, use the command `sudo aa-status` to check that AppArmor is loaded
+- on each server, use the command `uname -r` to check the kernel version and 
+  verify the `-grsec` suffix
+- on each server, check iptables rules using the command `sudo iptables -L -n`
+  (expected output examples TK)
+
+To test the CLI management script and add an initial admin user, from an ssh 
+session on the app server, run:
+
+.. code:: sh
+
+  sudo -u www-data bash
+  cd /var/www/securedrop
+  ./manage.py add-admin # follow script instructions, choosing N for Yubikey setup.
+
+Then use the login credentials created to log in to the Journalist Interface.
+ 
+
 
 iptables configuration:
 
