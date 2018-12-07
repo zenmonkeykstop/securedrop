@@ -16,27 +16,84 @@ to aid in PR review.
 Release testing
 ---------------
 
-Description of release process and manual/automated testing during two-week 
-phase.
+SecureDrop's regular release schedule is linked to that of Tails, due to 
+*Admin Workstation* dependencies. In practice, this means that a new minor 
+version of SecureDrop is released every 9-10 weeks. Patch versions are released
+as needed outside of this schedule. These point releases are usually in response
+to security issues or other critical bugs.
+
+The regular release process begins 2 weeks before the release date, with a freeze 
+on new features. In the first week, changelog and initial test plan are written by the designated
+release manager, and manual testing begins on release candidate builds. If there
+are new localization strings that have not yet been translated, the release 
+manager coordinates with the volunteer translator community to get any changes 
+added via Weblate. 
+
+At the beginning of the second week, a freeze is imposed on new strings, with an 
+absolute deadline of the day before release for any final additions.
+
+If a release includes a kernel update, the release manager also creates a QA testing
+matrix, with columns covering kernel-specific tests including testing for grsec settings
+and cpu vulnerabilities for each supported hardware configuration. 
 
 Prerequisites
 ^^^^^^^^^^^^^
-How to set up prod VMs, or use hardware. (staging worth mentioning?)
+Manual QA should be performed against :ref:`prod VMs<production_vms>` or 
+:ref:`hardware instances<hardware_guide>`. The testing process covers both fresh installs and
+upgrades from the latest version of SecureDrop.
 
 Getting Started
 ^^^^^^^^^^^^^^^
-Finding the test plan, finding the master release ticket, how to submit 
-the plan
+You can find links to the current release's test plan in Github, in the Master 
+Release Ticket - for example, here is the `release ticket for 0.11.0 <https://github.com/freedomofpress/securedrop/issues/3946>`_.
 
-Testing clean installs
-^^^^^^^^^^^^^^^^^^^^^^
-How to install from apt-test, by updating ansible vars
+Fresh Install Setup
+^^^^^^^^^^^^^^^^^^^
+To set up  the fresh install scenario, you should first follow the SecureDrop install process as far as the step where Ubuntu is installed on the *Application* and *Monitor Servers*. In the case of testing against prod vms, this would mean going as far as: ``vagrant up --no-provision /prod/`` 
 
+Then, on the *Admin Workstation*, you should check out the tag corresponding to 
+the release candidate that you'd like to test. For example:
 
-Testing upgrades
-^^^^^^^^^^^^^^^^
-How to use an ansible playbook to update repo info in an existing install
-to point to apt-test
+.. code:: sh
+
+    cd ~/Persistent/securedrop
+    git checkout 0.11.0-rc4    
+
+Having checked out the RC tag, you should now modify the Ansible playbook used to install SecureDrop to use the FPF test APT repo instead of the production repo. In the file ``~/Persistent/securedrop/install_files/ansible-base/roles/install-fpf-repo/defaults/main.yml``, change the value of the ``apt_repo_url``
+variable from:
+
+.. code:: sh
+
+   apt_repo_url: https://apt.freedom.press
+
+to
+
+.. code:: sh
+
+   apt_repo_url: https://apt-test.freedom.press
+
+In the same file, replace the FPF repo signing key with its test counterpart by 
+updating the following section from:
+
+.. code:: sh
+
+    apt_repo_pubkey_files:
+      - fpf-signing-key.pub
+
+to
+
+.. code:: sh
+
+    apt_repo_pubkey_files:
+      - apt-test-signing-key.pub
+
+Then, proceed with the installation as normal. When the installation and Tails configuration is complete, you 
+can check the version information in the footer on the *Source Interface* to quickly 
+verify that you are running the expected release candidate version.
+
+Upgrade Setup
+^^^^^^^^^^^^^
+To set up an environment to test the upgrade scenario, you should first install the latest release version of SecureDrop on your chosen environment.
 
 Server and Admin testing
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -64,13 +121,10 @@ session on the app server, run:
 
 Then use the login credentials created to log in to the Journalist Interface.
  
-
-
 iptables configuration:
 
 - how to check
-- ssh-over-tor configuration
-- ssh-local configuration
+- ssh-over-tor vs ssh-over-lan
 
 Admin and CLI  testing
 
