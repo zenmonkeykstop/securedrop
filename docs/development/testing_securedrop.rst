@@ -66,7 +66,7 @@ variable from:
 
    apt_repo_url: https://apt.freedom.press
 
-to
+to:
 
 .. code:: sh
 
@@ -80,12 +80,27 @@ updating the following section from:
     apt_repo_pubkey_files:
       - fpf-signing-key.pub
 
-to
+to:
 
 .. code:: sh
 
     apt_repo_pubkey_files:
       - apt-test-signing-key.pub
+
+If the release contains a Tor update, you should also change the ``tor_apt_repo_url``
+variable in ``~/Persistent/securedrop/install_files/ansible-base/group_vars/all/securedrop`` from:
+
+.. code:: sh
+    
+    tor_apt_repo_url: https://tor-apt.freedom.press
+
+to:
+
+
+.. code:: sh
+    
+    tor_apt_repo_url: https://apt-test.freedom.press
+
 
 Then, proceed with the installation as normal. When the installation and Tails configuration is complete, you 
 can check the version information in the footer on the *Source Interface* to quickly 
