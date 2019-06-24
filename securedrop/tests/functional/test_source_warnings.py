@@ -76,3 +76,4 @@ class TestSourceInterfaceBannerWarnings(
 
         banner = self.driver.find_element_by_id("js-warning")
         assert "Security Slider to Safest", banner.text
+

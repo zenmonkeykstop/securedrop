@@ -38,15 +38,23 @@ from db import db
 from models import Journalist
 from sdconfig import config
 
+from tests.functional.journalist_navigation_steps import \
+    JournalistNavigationStepsMixin
+from tests.functional.source_navigation_steps import \
+    SourceNavigationStepsMixin
+
 os.environ["SECUREDROP_ENV"] = "test"
 
-LOGFILE_PATH = abspath(join(dirname(realpath(__file__)), "../log/driver.log"))
-FIREFOX_PATH = "/usr/bin/firefox/firefox"
-
-TBB_PATH = abspath(join(expanduser("~"), ".local/tbb/tor-browser_en-US/"))
-os.environ["TBB_PATH"] = TBB_PATH
-TBBRC = join(TBB_PATH, "Browser/TorBrowser/Data/Tor/torrc")
-LOGGER.setLevel(logging.WARNING)
+# https://stackoverflow.com/a/34795883/837471
+class alert_is_not_present(object):
+    """ Expect an alert to not be present."""
+    def __call__(self, driver):
+        try:
+            alert = driver.switch_to.alert
+            alert.text
+            return False
+        except NoAlertPresentException:
+            return True
 
 FIREFOX = "firefox"
 TORBROWSER = "torbrowser"
@@ -76,67 +84,6 @@ class FunctionalTest(object):
         s.close()
         return port
 
-    def create_torbrowser_driver(self):
-        logging.info("Creating TorBrowserDriver")
-        log_file = open(LOGFILE_PATH, "a")
-        log_file.write("\n\n[%s] Running Functional Tests\n" % str(datetime.now()))
-        log_file.flush()
-
-        # Don't use Tor when reading from localhost, and turn off private
-        # browsing. We need to turn off private browsing because we won't be
-        # able to access the browser's cookies in private browsing mode. Since
-        # we use session cookies in SD anyway (in private browsing mode all
-        # cookies are set as session cookies), this should not affect session
-        # lifetime.
-        pref_dict = {
-            "network.proxy.no_proxies_on": "127.0.0.1",
-            "browser.privatebrowsing.autostart": False,
-        }
-        if self.accept_languages is not None:
-            pref_dict["intl.accept_languages"] = self.accept_languages
-
-        for i in range(self.driver_retry_count):
-            try:
-                self.torbrowser_driver = TorBrowserDriver(
-                    TBB_PATH,
-                    tor_cfg=cm.USE_RUNNING_TOR,
-                    pref_dict=pref_dict,
-                    tbb_logfile_path=LOGFILE_PATH,
-                )
-                logging.info("Created Tor Browser web driver")
-                break
-            except Exception as e:
-                logging.error("Error creating Tor Browser web driver: %s", e)
-                if i < self.driver_retry_count:
-                    time.sleep(self.driver_retry_interval)
-
-        if not self.torbrowser_driver:
-            raise Exception("Could not create Tor Browser web driver")
-
-    def create_firefox_driver(self):
-        logging.info("Creating Firefox web driver")
-
-        profile = webdriver.FirefoxProfile()
-        if self.accept_languages is not None:
-            profile.set_preference("intl.accept_languages", self.accept_languages)
-            profile.update_preferences()
-
-        for i in range(self.driver_retry_count):
-            try:
-                self.firefox_driver = webdriver.Firefox(
-                    firefox_binary=FIREFOX_PATH, firefox_profile=profile
-                )
-                self.firefox_driver.set_window_position(0, 0)
-                self.firefox_driver.set_window_size(1024, 768)
-                logging.info("Created Firefox web driver")
-                break
-            except Exception as e:
-                logging.error("Error creating Firefox web driver: %s", e)
-                if i < self.driver_retry_count:
-                    time.sleep(self.driver_retry_interval)
-        if not self.firefox_driver:
-            raise Exception("Could not create Firefox web driver")
-
     def switch_to_firefox_driver(self):
         if not self.firefox_driver:
             self.create_firefox_driver()
@@ -150,12 +97,18 @@ class FunctionalTest(object):
         logging.info("Switched %s to TorBrowser driver: %s", self, self.driver)
 
     @pytest.fixture(autouse=True)
-    def set_default_driver(self):
+    def drivers(self, firefox_webdriver, tbb_webdriver):
+
+        # self.create_firefox_driver()
+        self.firefox_driver = firefox_webdriver
+        # self.create_torbrowser_driver()
+        self.torbrowser_driver = tbb_webdriver
         logging.info("Creating default web driver: %s", self.default_driver_name)
         if self.default_driver_name == FIREFOX:
             self.switch_to_firefox_driver()
         else:
             self.switch_to_torbrowser_driver()
+        self.driver.implicitly_wait(0)
 
         yield
 

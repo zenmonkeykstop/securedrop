@@ -30,6 +30,7 @@ pysocks==1.6.8            # via requests
 pytest-cov==2.5.1
 pytest-mock==1.7.1
 pytest==3.3.2
+pytest-xdist==1.24.0
 pyvirtualdisplay==0.2.1
 requests[socks]==2.22.0
 selenium==3.141.0

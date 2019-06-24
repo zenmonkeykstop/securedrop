@@ -577,6 +577,9 @@ class JournalistNavigationStepsMixin:
         self._login_user(self.new_user["username"], self.new_user["password"], self.new_totp)
 
         assert self._is_on_journalist_homepage()
+        
+        # KOG - it may be necessary to log out afterward in fixtured version of
+        # tests
 
     def _journalist_checks_messages(self):
         self.driver.get(self.journalist_location)
