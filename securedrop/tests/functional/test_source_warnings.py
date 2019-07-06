@@ -25,7 +25,7 @@ class TestSourceInterfaceBannerWarnings(
         finally:
             self.switch_to_torbrowser_driver()
 
-    def test_warning_appears_if_orbot_is_used(self):
+    def test_warning_appears_if_orbot_is_used(self, firefox_binary):
         orbotUserAgent = "Mozilla/5.0 (Android; Mobile;" " rv:52.0) Gecko/20100101 Firefox/52.0"
 
         self.f_profile_path2 = "/tmp/testprofile2"
@@ -45,7 +45,7 @@ class TestSourceInterfaceBannerWarnings(
             profile.set_preference("network.dns.blockDotOnion", False)
         profile.update_preferences()
         self.driver2 = webdriver.Firefox(
-            firefox_binary=functional_test.FIREFOX_PATH, firefox_profile=profile
+            firefox_binary=firefox_binary, firefox_profile=profile
         )
         self.driver2.get(self.source_location)
 

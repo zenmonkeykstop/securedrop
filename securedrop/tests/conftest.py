@@ -55,6 +55,8 @@ TEST_WORKER_PIDFILE = '/tmp/securedrop_test_worker.pid'
 
 LOG_DIR = join(dirname(__file__), 'log')
 
+FIREFOX_PATH = "/usr/bin/firefox/firefox" 
+
 # Quiet down gnupg output. (See Issue #2595)
 GNUPG_LOG_LEVEL = os.environ.get('GNUPG_LOG_LEVEL', "ERROR")
 gnupg._util.log.setLevel(getattr(logging, GNUPG_LOG_LEVEL, logging.ERROR))
@@ -351,13 +353,17 @@ def firefox_profile():
    return None
 
 @pytest.fixture(scope='module')
-def firefox_webdriver(firefox_profile):
+def firefox_binary():
+    return FIREFOX_PATH
+
+
+@pytest.fixture(scope='module')
+def firefox_webdriver(firefox_profile, firefox_binary):
     # see https://review.openstack.org/#/c/375258/ and the
     # associated issues for background on why this is necessary
     connrefused_retry_count = 3
     connrefused_retry_interval = 5
     timeout = 10
-    FIREFOX_PATH = "/usr/bin/firefox/firefox" 
     driver = None
 
     profile = firefox_profile                                   
@@ -365,7 +371,7 @@ def firefox_webdriver(firefox_profile):
     for i in range(connrefused_retry_count + 1):
         try:
             driver = selenium_webdriver.Firefox(                        
-                firefox_binary=FIREFOX_PATH, firefox_profile=profile        
+                firefox_binary=firefox_binary, firefox_profile=profile        
             )                                                               
             driver.set_window_position(0, 0)                   
             driver.set_window_size(1024, 768)                  
