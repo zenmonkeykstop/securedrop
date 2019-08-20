@@ -21,4 +21,6 @@ setuptools.setup(
         "Intended Audience :: Developers",
         "Operating System :: OS Independent",
     ),
+    entry_points={"console_scripts": ["sd-manage = manage:_run_from_commandline"]},
+
 )
