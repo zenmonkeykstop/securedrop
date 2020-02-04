@@ -10,11 +10,6 @@
       <a href="/">{{ gettext('All Sources') }}</a>
       <i class="fa fa-chevron-right"></i>
       <strong>{{ source.journalist_designation }}</strong>
-      <a href="#change-codename-{{ source.journalist_designation }}" title="{{ gettext('Generate a new random codename for this source. We recommend doing this if the first random codename is difficult to say or remember. You can generate new random codenames as many times as you like.') }}" class="plain" id="regenerate-codename-btn"><span id="regenerate-codename-btn-label">{{ gettext('Change codename') }}</span></a>
-      <div id="change-codename-{{ source.journalist_designation }}" class="confirm-prompt">{{ gettext('Are you sure you want to generate a new codename?') }}
-        <a href="#regenerate-code">{{ gettext('Cancel') }}</a>
-        <button class="small" type="submit">{{ gettext('CONFIRM') }}</button>
-      </div>
     </p>
   </form>
 
