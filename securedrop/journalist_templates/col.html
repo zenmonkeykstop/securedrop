@@ -2,16 +2,14 @@
 {% block body %}
 <div id="content" class="journalist-view-single">
 
-  <form action="{{ url_for('main.regenerate_code') }}" method="post" id="regenerate-code">
-    <input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
-    <input type="hidden" name="filesystem_id" value="{{ filesystem_id }}">
+  <input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
+  <input type="hidden" name="filesystem_id" value="{{ filesystem_id }}">
 
-    <p class="breadcrumbs">
-      <a href="/">{{ gettext('All Sources') }}</a>
-      <i class="fa fa-chevron-right"></i>
-      <strong>{{ source.journalist_designation }}</strong>
-    </p>
-  </form>
+  <p class="breadcrumbs">
+    <a href="/">{{ gettext('All Sources') }}</a>
+    <i class="fa fa-chevron-right"></i>
+    <strong>{{ source.journalist_designation }}</strong>
+  </p>
 
   {% if source.collection %}
     <p>{{ gettext('The documents are stored encrypted for security. To read them, you will need to decrypt them using GPG.') }}</p>
