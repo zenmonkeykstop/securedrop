@@ -22,9 +22,12 @@ urandom
 run_sass --force --update
 maybe_create_config_py
 
+echo "CIRCLE_BRANCH is set to: $CIRCLE_BRANCH"
+
 if [ -n "${CIRCLE_BRANCH:-}" ] ; then
     touch tests/log/firefox.log
     function finish {
+        echo "Uploading test results to CodeCov..."
         cp tests/log/firefox.log ../test-results
         bash <(curl -s https://codecov.io/bash)
     }
