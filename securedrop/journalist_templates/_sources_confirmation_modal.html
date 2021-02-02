@@ -1,16 +1,14 @@
 <div id="{{ modal_data.modal_id }}" class="menu-modal-dialog">
   <a href="#close" class="external"></a>
   <div class="delete-menu-dialog">
-    <h2>{{ modal_data.modal_header }}</h2>
-    <p>{{ modal_data.modal_body }}</p>
-    {% if modal_data.modal_warning is defined %}
-      <p><em>{{ modal_data.modal_warning }}</em></p>
-    {% endif %}
+    <p><center><span id="delete-menu-summary" class="delete-menu-attention"></span></center></p>
+    <p>{{ gettext("What would you like to delete?") }}</p>
     <center>
-      <a href="#close" id="{{ modal_data.cancel_id }}" title="{{ gettext('Cancel') }}" class="btn cancel small">{{ gettext('Cancel') }}</a>
-      <a href="#delete-sources-confirm-modal" id="delete-collections-link">
-        <button type="button" class="small {{ modal_data.submit_btn_type }}">{{ modal_data.submit_btn_text }}</button>
-      </a>
+      <p><button type="submit" name="action" value="delete-data" class="small btn danger">{{ gettext('Files &amp; Messages') }}</button></p>
+      <p><a href="#delete-sources-confirm-modal" id="delete-collections-link">
+        <button type="button" class="small danger btn">{{ gettext('Source Accounts') }}</button>
+      </a></p>
+      <p><a href="#close">{{ gettext('Cancel') }}</a></p>
     </center>
   </div>
 </div>

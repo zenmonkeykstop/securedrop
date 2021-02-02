@@ -326,6 +326,38 @@ def col_delete(cols_selected: List[str]) -> werkzeug.Response:
     return redirect(url_for('main.index'))
 
 
+def col_delete_data(cols_selected: List[str]) -> werkzeug.Response:
+    """deleting store data and resetting last update times for selected sources"""
+    if len(cols_selected) < 1:
+        flash(gettext("No sources selected for deletion."), "error")
+    else:
+
+        # queue all files for deletion and remove them from the database
+        sources = Source.query.filter(Source.filesystem_id.in_(cols_selected))
+        for s in sources:
+            source = get_source(s.filesystem_id, include_deleted=True)
+            for file_object in source.collection:
+                try:
+                    delete_file_object(file_object)
+                except Exception:
+                    pass # the entire collection directory will be deleted below
+
+        # reset source last_updated time to a generic default
+        dummy_update_time = datetime.date(2013, 5, 14)
+        sources.update({Source.last_updated: dummy_update_time}, synchronize_session="fetch")
+        db.session.commit()
+
+        # delete entire store just in case there are disconnected files
+        for filesystem_id in cols_selected:
+            path = current_app.storage.path(filesystem_id)
+            if os.path.exists(path):
+                current_app.storage.move_to_shredder(path)
+
+        flash(gettext('The files & messages have been deleted.'), "success")
+
+    return redirect(url_for('main.index'))
+
+
 def delete_collection(filesystem_id: str) -> None:
     # Delete the source's collection of submissions
     path = current_app.storage.path(filesystem_id)

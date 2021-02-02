@@ -24,7 +24,7 @@ from journalist_app.forms import ReplyForm
 from journalist_app.utils import (make_star_true, make_star_false, get_source,
                                   delete_collection, col_download_unread,
                                   col_download_all, col_star, col_un_star,
-                                  col_delete, mark_seen)
+                                  col_delete, col_delete_data, mark_seen)
 from sdconfig import SDConfig
 
 
@@ -70,7 +70,8 @@ def make_blueprint(config: SDConfig) -> Blueprint:
     def process() -> werkzeug.Response:
         actions = {'download-unread': col_download_unread,
                    'download-all': col_download_all, 'star': col_star,
-                   'un-star': col_un_star, 'delete': col_delete}
+                   'un-star': col_un_star, 'delete': col_delete,
+                   'delete-data': col_delete_data}
         if 'cols_selected' not in request.form:
             flash(gettext('No collections selected.'), 'error')
             return redirect(url_for('main.index'))
