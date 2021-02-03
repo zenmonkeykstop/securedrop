@@ -1,13 +1,10 @@
 <div id="{{ modal_data.modal_id }}" class="menu-modal-dialog">
   <a href="#close" class="external"></a>
-  <div class="delete-menu-dialog">
+  <div id="delete-menu-dialog">
     <p>
-      <center>
         <span id="delete-menu-summary"></span>
-      </center>
     </p>
     <p>{{ gettext("What would you like to delete?") }}</p>
-    <center>
       <p>
         <button type="submit" name="action" value="delete-data" class="small btn danger">{{ gettext('Files &amp; Messages') }}</button>
       </p>

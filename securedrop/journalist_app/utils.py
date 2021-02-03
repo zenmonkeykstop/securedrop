@@ -259,7 +259,7 @@ def bulk_delete(
             "{num} submissions deleted.",
             num_selected
         ).format(num=num_selected),
-        "notification"
+        "success"
     )
     if deletion_errors > 0:
         current_app.logger.error("Disconnected submission entries (%d) were detected",
@@ -321,7 +321,7 @@ def col_delete(cols_selected: List[str]) -> werkzeug.Response:
         num = len(cols_selected)
         flash(ngettext('{num} collection deleted', '{num} collections deleted',
                        num).format(num=num),
-              "notification")
+              "success")
 
     return redirect(url_for('main.index'))
 

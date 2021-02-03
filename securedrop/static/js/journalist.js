@@ -211,11 +211,20 @@ ready(function() {
 
   let deleteSourcesButton = document.getElementById('btn-delete-sources');
   if (deleteSourcesButton) {
+    menuOffset = 30;
     deleteSourcesButton.onclick = function() {
       var checkboxes = document.querySelectorAll('input[name="cols_selected"]:checked');
       let deleteSummarySpan = document.getElementById("delete-menu-summary");
       if (deleteSummarySpan) {
           deleteSummarySpan.textContent = get_string("sources-selected") + checkboxes.length;
+      }
+      btnRect=deleteSourcesButton.getBoundingClientRect();
+      let confirmDialog = document.getElementById('delete-menu-dialog');
+      if (confirmDialog) {
+          confirmDialog.style.position = "absolute";
+          confirmDialog.style.top = btnRect.bottom +'px';
+          confirmDialog.style.marginTop = "0px";
+          confirmDialog.style.left = (btnRect.left - menuOffset) +'px';
       }
     }
   }
