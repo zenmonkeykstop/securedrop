@@ -209,4 +209,14 @@ ready(function() {
       });
   }
 
+  let deleteSourcesButton = document.getElementById('btn-delete-sources');
+  if (deleteSourcesButton) {
+    deleteSourcesButton.onclick = function() {
+      var checkboxes = document.querySelectorAll('input[name="cols_selected"]:checked');
+      let deleteSummarySpan = document.getElementById("delete-menu-summary");
+      if (deleteSummarySpan) {
+          deleteSummarySpan.textContent = get_string("sources-selected") + checkboxes.length;
+      }
+    }
+  }
 });

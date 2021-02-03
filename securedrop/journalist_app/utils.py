@@ -340,7 +340,7 @@ def col_delete_data(cols_selected: List[str]) -> werkzeug.Response:
                 try:
                     delete_file_object(file_object)
                 except Exception:
-                    pass # the entire collection directory will be deleted below
+                    pass
 
         # reset source last_updated time to a generic default
         dummy_update_time = datetime.date(2013, 5, 14)
