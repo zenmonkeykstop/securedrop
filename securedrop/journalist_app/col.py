@@ -63,7 +63,7 @@ def make_blueprint(config: SDConfig) -> Blueprint:
 
         flash(gettext("{source_name}'s collection deleted.")
               .format(source_name=source.journalist_designation),
-              "notification")
+              "success")
         return redirect(url_for('main.index'))
 
     @view.route('/process', methods=('POST',))
