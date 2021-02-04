@@ -211,16 +211,25 @@ ready(function() {
 
   let deleteSourcesButton = document.getElementById('btn-delete-sources');
   if (deleteSourcesButton) {
-    menuOffset = 30;
     deleteSourcesButton.onclick = function() {
       var checkboxes = document.querySelectorAll('input[name="cols_selected"]:checked');
       let deleteSummarySpan = document.getElementById("delete-menu-summary");
       if (deleteSummarySpan) {
           deleteSummarySpan.textContent = get_string("sources-selected") + checkboxes.length;
       }
-      btnRect=deleteSourcesButton.getBoundingClientRect();
-      let confirmDialog = document.getElementById('delete-menu-dialog');
+      let btnRect=deleteSourcesButton.getBoundingClientRect();
+      let deleteDialog = document.getElementById('delete-menu-dialog');
+      if (deleteDialog) {
+          menuOffset = 120;
+          deleteDialog.style.position = "absolute";
+          deleteDialog.style.top = btnRect.bottom +'px';
+          deleteDialog.style.marginTop = "0px";
+          deleteDialog.style.left = (btnRect.left - menuOffset) + 'px';
+      }
+      let confirmDialog = document.getElementById('delete-confirm-menu-dialog');
       if (confirmDialog) {
+          menuOffset = 250;
+          btnRect=deleteSourcesButton.getBoundingClientRect();
           confirmDialog.style.position = "absolute";
           confirmDialog.style.top = btnRect.bottom +'px';
           confirmDialog.style.marginTop = "0px";
