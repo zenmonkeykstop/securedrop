@@ -342,11 +342,6 @@ def col_delete_data(cols_selected: List[str]) -> werkzeug.Response:
                 except Exception:
                     pass
 
-        # reset source last_updated time to a generic default
-        dummy_update_time = datetime.date(2013, 5, 14)
-        sources.update({Source.last_updated: dummy_update_time}, synchronize_session="fetch")
-        db.session.commit()
-
         # delete entire store just in case there are disconnected files
         for filesystem_id in cols_selected:
             path = current_app.storage.path(filesystem_id)
