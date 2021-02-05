@@ -140,6 +140,12 @@ class JournalistNavigationStepsMixin:
     def _journalist_clicks_on_modal(self, click_id):
         self.safe_click_by_id(click_id)
 
+    def _journalist_clicks_delete_collections_cancel_on_first_modal(self):
+        self._journalist_clicks_on_modal("delete-menu-dialog-cancel")
+
+    def _journalist_clicks_delete_collections_cancel_on_second_modal(self):
+        self._journalist_clicks_on_modal("cancel-collections-deletions")
+
     def _journalist_clicks_delete_collections_cancel_on_modal(self):
         self._journalist_clicks_on_modal("cancel-collections-deletions")
 
@@ -149,8 +155,13 @@ class JournalistNavigationStepsMixin:
     def _journalist_clicks_delete_collection_cancel_on_modal(self):
         self._journalist_clicks_on_modal("cancel-collection-deletions")
 
-    def _journalist_clicks_delete_collections_on_modal(self):
+    def _journalist_clicks_delete_collections_on_first_modal(self):
         self._journalist_clicks_on_modal("delete-collections")
+
+        self.wait_for(lambda: self.driver.find_element_by_id("delete-collections-confirm"))
+
+    def _journalist_clicks_delete_collections_on_second_modal(self):
+        self._journalist_clicks_on_modal("delete-collections-confirm")
 
         def collection_deleted():
             if not self.accept_languages:
@@ -158,6 +169,7 @@ class JournalistNavigationStepsMixin:
                 assert "1 collection deleted" in flash_msg.text
 
         self.wait_for(collection_deleted)
+
 
     def _journalist_clicks_delete_selected_on_modal(self):
         self._journalist_clicks_on_modal("delete-selected")
@@ -181,7 +193,7 @@ class JournalistNavigationStepsMixin:
         self.wait_for(lambda: self.driver.find_element_by_id("delete-selected-confirmation-modal"))
 
     def _journalist_clicks_delete_collections_link(self):
-        self._journalist_clicks_delete_link("delete-collections-link", "delete-confirmation-modal")
+        self._journalist_clicks_delete_link("delete-collections-link", "delete-sources-modal")
 
     def _journalist_clicks_delete_collection_link(self):
         self._journalist_clicks_delete_link(
@@ -226,14 +238,24 @@ class JournalistNavigationStepsMixin:
             self.safe_click_all_by_css_selector('input[type="checkbox"][name="cols_selected"]')
 
         self._journalist_clicks_delete_collections_link()
-        self._journalist_clicks_delete_collections_cancel_on_modal()
+        self._journalist_clicks_delete_collections_cancel_on_first_modal()
 
         sources = self.driver.find_elements_by_class_name("code-name")
         assert len(sources) > 0
 
         self._journalist_clicks_delete_collections_link()
-        self._journalist_clicks_delete_collections_on_modal()
+        time.sleep(5)
+        self._journalist_clicks_delete_collections_on_first_modal()
+        time.sleep(5)
+        self._journalist_clicks_delete_collections_cancel_on_second_modal()
 
+        time.sleep(5)
+        self._journalist_clicks_delete_collections_link()
+        time.sleep(5)
+        self._journalist_clicks_delete_collections_on_first_modal()
+        time.sleep(5)
+        self._journalist_clicks_delete_collections_on_second_modal()
+        time.sleep(5)
         # We should be redirected to the index without those boxes selected.
         def no_sources():
             assert len(self.driver.find_elements_by_class_name("code-name")) == 0

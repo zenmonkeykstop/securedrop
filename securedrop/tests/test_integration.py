@@ -134,7 +134,7 @@ def test_submit_message(source_app, journalist_app, test_journo):
         resp = app.get(col_url)
         assert resp.status_code == 200
         text = resp.data.decode('utf-8')
-        assert "No documents to display." in text
+        assert "No submissions to display." in text
 
         # the file should be deleted from the filesystem
         # since file deletion is handled by a polling worker, this test
@@ -238,7 +238,7 @@ def test_submit_file(source_app, journalist_app, test_journo):
         resp = app.get(col_url)
         assert resp.status_code == 200
         text = resp.data.decode('utf-8')
-        assert "No documents to display." in text
+        assert "No submissions to display." in text
 
         # the file should be deleted from the filesystem
         # since file deletion is handled by a polling worker, this test

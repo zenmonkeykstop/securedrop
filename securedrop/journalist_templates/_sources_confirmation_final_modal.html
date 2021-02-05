@@ -12,8 +12,8 @@
     <p>
       <span class="modal-danger-text">{{ gettext('Are you sure this is what you want?') }}</span</p>
     <p>
-      <a href="#close" id="{{ modal_data.cancel_id }}" title="{{ gettext('Cancel') }}" class="btn cancel small">{{ gettext('Cancel') }}</a>
-      <button type="submit" id="{{ modal_data.submit_id }}" name="action" value="delete" class="small {{ modal_data.submit_btn_type }}">{{ gettext('Yes, Delete Selected Source Accounts') }}</button>
+      <a href="#close" id="cancel-collections-deletions" title="{{ gettext('Cancel') }}" class="btn cancel small">{{ gettext('Cancel') }}</a>
+      <button type="submit" id="delete-collections-confirm" name="action" value="delete" class="small danger">{{ gettext('Yes, Delete Selected Source Accounts') }}</button>
     </p>
   </div>
 </div>

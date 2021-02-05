@@ -38,12 +38,6 @@
       {% with %}
         {% set modal_data = {
                               "modal_id": "delete-sources-confirm-modal",
-                              "modal_header": gettext('Are you really sure?'),
-                              "modal_body": gettext('RIP your sources'),
-                              "cancel_id": "cancel-collections-deletions",
-                              "submit_id": "delete-collections",
-                              "submit_btn_type": "danger",
-                              "submit_btn_text": gettext('Really Delete em')
                             }
         %}
         {% include '_sources_confirmation_final_modal.html' %}
