@@ -220,7 +220,7 @@ ready(function() {
       let btnRect=deleteSourcesButton.getBoundingClientRect();
       let deleteDialog = document.getElementById('delete-menu-dialog');
       if (deleteDialog) {
-          menuOffset = 120;
+          let menuOffset = 120;
           deleteDialog.style.position = "absolute";
           deleteDialog.style.top = btnRect.bottom +'px';
           deleteDialog.style.marginTop = "0px";
@@ -228,7 +228,7 @@ ready(function() {
       }
       let confirmDialog = document.getElementById('delete-confirm-menu-dialog');
       if (confirmDialog) {
-          menuOffset = 250;
+          let menuOffset = 250;
           btnRect=deleteSourcesButton.getBoundingClientRect();
           confirmDialog.style.position = "absolute";
           confirmDialog.style.top = btnRect.bottom +'px';
