@@ -326,27 +326,31 @@ def col_delete(cols_selected: List[str]) -> werkzeug.Response:
     return redirect(url_for('main.index'))
 
 
+def delete_source_files(filesystem_id: str) -> None:
+    """deletes submissions and replies for specified source"""
+    source = get_source(filesystem_id, include_deleted=True)
+    if source is not None:
+        # queue all files for deletion and remove them from the database
+        for f in source.collection:
+            try:
+                delete_file_object(f)
+            except Exception:
+                pass
+
+        # delete entire store just in case there are disconnected files
+        path = current_app.storage.path(filesystem_id)
+        if os.path.exists(path):
+            current_app.storage.move_to_shredder(path)
+
+
 def col_delete_data(cols_selected: List[str]) -> werkzeug.Response:
-    """deleting store data and resetting last update times for selected sources"""
+    """deletes store data for selected sources"""
     if len(cols_selected) < 1:
         flash(gettext("No sources selected for deletion."), "error")
     else:
 
-        # queue all files for deletion and remove them from the database
-        sources = Source.query.filter(Source.filesystem_id.in_(cols_selected))
-        for s in sources:
-            source = get_source(s.filesystem_id, include_deleted=True)
-            for file_object in source.collection:
-                try:
-                    delete_file_object(file_object)
-                except Exception:
-                    pass
-
-        # delete entire store just in case there are disconnected files
         for filesystem_id in cols_selected:
-            path = current_app.storage.path(filesystem_id)
-            if os.path.exists(path):
-                current_app.storage.move_to_shredder(path)
+            delete_source_files(filesystem_id)
 
         flash(gettext('The files and messages have been deleted.'), "success")
 
@@ -354,6 +358,7 @@ def col_delete_data(cols_selected: List[str]) -> werkzeug.Response:
 
 
 def delete_collection(filesystem_id: str) -> None:
+    """deletes source account including files and reply key"""
     # Delete the source's collection of submissions
     path = current_app.storage.path(filesystem_id)
     if os.path.exists(path):

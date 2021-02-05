@@ -283,9 +283,9 @@ class JournalistNavigationStepsMixin:
         self._journalist_clicks_delete_files_on_first_modal()
         time.sleep(5)
 
-
         # We should be redirected to the index with the source present, files
         # and messages zeroed, and a success flash message present
+
         def one_source_no_files():
             assert len(self.driver.find_elements_by_class_name("code-name")) == 1
             if not self.accept_languages:
