@@ -170,7 +170,6 @@ class JournalistNavigationStepsMixin:
 
         self.wait_for(collection_deleted)
 
-
     def _journalist_clicks_delete_selected_on_modal(self):
         self._journalist_clicks_on_modal("delete-selected")
 
@@ -244,18 +243,13 @@ class JournalistNavigationStepsMixin:
         assert len(sources) > 0
 
         self._journalist_clicks_delete_collections_link()
-        time.sleep(5)
         self._journalist_clicks_delete_collections_on_first_modal()
-        time.sleep(5)
         self._journalist_clicks_delete_collections_cancel_on_second_modal()
 
-        time.sleep(5)
         self._journalist_clicks_delete_collections_link()
-        time.sleep(5)
         self._journalist_clicks_delete_collections_on_first_modal()
-        time.sleep(5)
         self._journalist_clicks_delete_collections_on_second_modal()
-        time.sleep(5)
+
         # We should be redirected to the index without those boxes selected.
         def no_sources():
             assert len(self.driver.find_elements_by_class_name("code-name")) == 0
