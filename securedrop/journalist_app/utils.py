@@ -348,7 +348,7 @@ def col_delete_data(cols_selected: List[str]) -> werkzeug.Response:
             if os.path.exists(path):
                 current_app.storage.move_to_shredder(path)
 
-        flash(gettext('The files & messages have been deleted.'), "success")
+        flash(gettext('The files and messages have been deleted.'), "success")
 
     return redirect(url_for('main.index'))
 
