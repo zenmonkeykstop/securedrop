@@ -319,7 +319,7 @@ def col_delete(cols_selected: List[str]) -> werkzeug.Response:
         db.session.commit()
 
         num = len(cols_selected)
-        flash(ngettext('{num} collection deleted', '{num} collections deleted',
+        flash(ngettext('The account and all data for {num} source have been deleted.', 'The accounts and all data for {num} sources have been deleted',
                        num).format(num=num),
               "success")
 
