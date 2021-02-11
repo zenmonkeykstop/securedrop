@@ -213,9 +213,26 @@ ready(function() {
   if (deleteSourcesButton) {
     deleteSourcesButton.onclick = function() {
       var checkboxes = document.querySelectorAll('input[name="cols_selected"]:checked');
+      let deleteMenuCTA = document.getElementById('delete-menu-cta');
+      let deleteMenuNoSelect = document.getElementById('delete-menu-no-select');
+      if (checkboxes.length <= 0) {
+          if (deleteMenuCTA) {
+              deleteMenuCTA.style.display = "none"
+          }
+          if (deleteMenuNoSelect) {
+              deleteMenuNoSelect.style.display = "block"
+          }
+      } else {
+          if (deleteMenuCTA) {
+              deleteMenuCTA.style.display = "block"
+          }
+          if (deleteMenuNoSelect) {
+              deleteMenuNoSelect.style.display = "none"
+          }
+      }
       let deleteSummarySpan = document.getElementById("delete-menu-summary");
       if (deleteSummarySpan) {
-          deleteSummarySpan.textContent = get_string("sources-selected") + checkboxes.length;
+          deleteSummarySpan.innerHTML = get_string("sources-selected") + "<b>"+ checkboxes.length + "</b>";
       }
       let btnRect=deleteSourcesButton.getBoundingClientRect();
       let deleteDialog = document.getElementById('delete-menu-dialog');
