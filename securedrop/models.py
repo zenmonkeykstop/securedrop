@@ -34,6 +34,8 @@ if os.environ.get('SECUREDROP_ENV') == 'test':
 
 ARGON2_PARAMS = dict(memory_cost=2**16, rounds=4, parallelism=2)
 
+OTP_LENGTH=32
+
 
 def get_one_or_else(query: Query,
                     logger: 'Logger',
@@ -403,7 +405,7 @@ class Journalist(db.Model):
     is_admin = Column(Boolean)  # type: Column[Optional[bool]]
     session_nonce = Column(Integer, nullable=False, default=0)
 
-    otp_secret = Column(String(16), default=pyotp.random_base32)
+    otp_secret = Column(String(OTP_LENGTH), default=pyotp.random_base32(length=OTP_LENGTH))
     is_totp = Column(Boolean, default=True)  # type: Column[Optional[bool]]
     hotp_counter = Column(Integer, default=0)  # type: Column[Optional[int]]
     last_token = Column(String(6))
