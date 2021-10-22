@@ -1,6 +1,6 @@
 <p align="center">
   <img src="/securedrop/static/i/logo.png" alt="SecureDrop" width="350" height="314">
-</p>
+</p>NANA
 
 > [There are many ways to contribute to SecureDrop, and we welcome your help!](CONTRIBUTING.md) By contributing to this project, you agree to abide by our [Code of Conduct](https://github.com/freedomofpress/.github/blob/main/CODE_OF_CONDUCT.md).
 
