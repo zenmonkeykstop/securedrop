@@ -1,7 +1,9 @@
 name: Update repository labels
 
 on: 
-    - [push, pull_request]
+  push:
+    branches:
+    - label-test
     paths:
     - '.github/workflows/labels.yml'
 
